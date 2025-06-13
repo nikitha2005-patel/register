@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voting System</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e3f2fd;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .container {
+      max-width: 450px;
+      background: white;
+      margin: 50px auto 0;
+      padding: 25px 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease-in-out;
+    }
+    .container:hover { transform: scale(1.02); }
+    .hidden { display: none; }
+
+    h1, h2 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border: 1.8px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: #1976d2;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 0;
+      margin-top: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover { background-color: #1565c0; }
+
+    #userDetails p {
+      font-size: 16px;
+      color: #333;
+      margin: 8px 0;
+    }
+
+    #userPhoto {
+      display: block;
+      margin: 10px auto;
+      border-radius: 50%;
+      border: 3px solid #1976d2;
+    }
+
+    .error {
+      color: #d32f2f;
+      font-weight: 700;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #parties button {
+      width: 100%;
+      margin: 8px 0;
+      font-size: 18px;
+      padding: 12px 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    footer {
+      background-color: #1976d2;
+      color: white;
+      padding: 15px 10px;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.6;
+      user-select: none;
+    }
+    footer a {
+      color: #bbdefb;
+      text-decoration: none;
+      margin: 0 8px;
+      cursor: pointer;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    #adminDashboardPage {
+      max-width: 600px;
+      margin: 50px auto 50px;
+      background: white;
+      border-radius: 10px;
+      padding: 40px 30px 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    #adminDashboardPage h2 { margin-top: 0; }
+    #adminDashboardPage canvas {
+      background: white;
+      border-radius: 8px;
+      max-width: 100%;
+    }
+    #adminDashboardPage button {
+      max-width: 200px;
+      margin: 25px auto 0;
+      display: block;
+    }
+
+    #adminProfile {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #adminProfile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #1976d2;
+      object-fit: cover;
+    }
+    #adminProfile span {
+      font-weight: 600;
+      color: #1976d2;
+      font-size: 16px;
+      user-select: none;
+    }
+
+    @media (max-width: 500px) {
+      .container, #adminDashboardPage {
+        margin: 25px 10px 30px;
+        padding: 25px 20px 30px;
+      }
+      #adminProfile {
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header style="background-color: #0c4c8a; color: white; padding: 15px 0; text-align: center;">
+  <div style="display: inline-flex; align-items: center; justify-content: center; gap: 12px;">
+    <img src="C:/Users/nikit/Downloads/Emblem-of-India-logo-01.png" alt="India Emblem" style="height: 45px;" />
+    <span style="font-size: 22px; font-weight: bold;">ELECTION COMMISSION OF INDIA</span>
+  </div>
+</header>
+
+<div id="homePage" class="container">
+  <h1>Welcome to Voting System</h1>
+  <button onclick="goToAadhaar()">Start Voting</button>
+  <button style="margin-top: 15px;" onclick="goToAdminLogin()">Admin Access</button>
+</div>
+
+<div id="aadhaarPage" class="container hidden">
+  <h2>Aadhaar Verification</h2>
+  <input type="text" id="aadhaar" placeholder="Enter Aadhaar Number" maxlength="12" />
+  <button onclick="verifyAadhaar()">Verify</button>
+  <div id="userDetails" class="hidden">
+    <p id="userName"></p>
+    <img id="userPhoto" width="100" height="100" alt="User Photo" />
+    <p><strong>Aadhaar Number:</strong> <span id="userAadhaar"></span></p>
+    <p><strong>Voter ID:</strong> <span id="userVoterId"></span></p>
+    <p><strong>Age:</strong> <span id="userAge"></span></p>
+    <p><strong>Address:</strong> <span id="userAddress"></span></p>
+    <button onclick="goToVoting()">OK</button>
+  </div>
+  <p id="error" class="error"></p>
+</div>
+
+<div id="votingPage" class="container hidden">
+  <h2>Vote for Your Party</h2>
+  <div id="parties"></div>
+  <button onclick="submitVote()" disabled id="submitVoteBtn">Submit Vote</button>
+</div>
+
+<div id="nextSectionPage" class="container hidden">
+  <h2>Thank you for voting!</h2>
+  <button onclick="goToHome()">Back to Home</button>
+</div>
+
+<div id="adminLoginPage" class="container hidden">
+  <h2>Admin Login</h2>
+  <input type="text" id="adminUsername" placeholder="Username" />
+  <input type="password" id="adminPassword" placeholder="Password" />
+  <button onclick="adminLogin()">Login</button>
+  <p id="adminLoginError" class="error"></p>
+</div>
+
+<div id="adminDashboardPage" class="hidden">
+  <div id="adminProfile">
+    <img src="C:/ Users/nikit/Downloads/profile.png" alt="Admin Profile" />
+    <span>Admin</span>
+  </div>
+  <h2>Admin Dashboard</h2>
+  <p><strong>Total Votes Cast:</strong> <span id="totalVotes">0</span></p>
+  <canvas id="resultsChart" width="400" height="300"></canvas>
+  <button onclick="logoutAdmin()">Logout</button>
+</div>
+
+<footer>
+  <div>© 2025 Voting System. All rights reserved.</div>
+  <div>
+    <a href="#" onclick="return false;">Terms & Conditions</a> |
+    <a href="#" onclick="return false;">Helpdesk</a> |
+    <a href="#" onclick="return false;">Privacy Policy</a> |
+    <a href="#" onclick="return false;">Contact Us</a>
+  </div>
+  <div>Designed and Developed by YourName</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let users = {
+  "750644215177": {
+    name: "KUMBHAM SATHWIK",
+    age: 21,
+    address: "JAJIREDDY GUDEM,SURYAPET",
+    photo: "C:/Users/nikit/Downloads/sathwik.jpg",
+    voterId: "TS/2025/001"
+  },
+  "272597699287": {
+    name: "KAKARA VAMSHIDHAR",
+    age: 20,
+    address: "LB.NAGAR,HYDERBAD",
+    photo: "C:/Users/nikit/Downloads/vamshi.jpg",
+    voterId: "TS/2025/002"
+  },
+  "538592409279": {
+    name: "KALLEM HARSHA VARDHAN",
+    age: 20,
+    address: "MALLARAM,SIDDIPET",
+    photo: "C:/Users/nikit/Downloads/harsha.jpg",
+    voterId: "TS/2025/003"
+  },
+  "456405577266": {
+    name: "CHANDHANA",
+    age: 20,
+    address: "GHATKESAR",
+    photo: "C:/Users/nikit/Downloads/chandhana.jpg",
+    voterId: "TS/2025/004"
+  },
+  "111122223333": {
+    name: "CHINNI",
+    age: 16,
+    address: "Test Nagar",
+    photo: "https://via.placeholder.com/100",
+    voterId: "TS/2025/005"
+  }
+};
+
+let voters = new Set();
+let votes = {};
+let voteLogs = [];
+let currentVoter = null;
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "password123";
+
+function showPage(pageId) {
+  const pages = ["homePage", "aadhaarPage", "votingPage", "nextSectionPage", "adminLoginPage", "adminDashboardPage"];
+  pages.forEach(id => document.getElementById(id).classList.add("hidden"));
+  document.getElementById(pageId).classList.remove("hidden");
+
+  if (pageId === "aadhaarPage") clearError();
+  if (pageId === "adminLoginPage") clearAdminError();
+}
+
+function goToHome() {
+  currentVoter = null;
+  clearAllInputs();
+  showPage("homePage");
+}
+
+function goToAadhaar() {
+  currentVoter = null;
+  clearAllInputs();
+  showPage("aadhaarPage");
+}
+
+function goToVoting() {
+  if (!currentVoter) return;
+  document.getElementById("submitVoteBtn").disabled = true;
+
+  const parties = { "BJP": "🔴", "CONGRESS": "🔵", "BRS": "🟢" };
+  const partyDiv = document.getElementById("parties");
+  partyDiv.innerHTML = "";
+  for (let party in parties) {
+    let btn = document.createElement("button");
+    btn.innerHTML = `${parties[party]} ${party}`;
+    btn.onclick = () => selectParty(party, btn);
+    btn.type = "button";
+    partyDiv.appendChild(btn);
+    partyDiv.appendChild(document.createElement("br"));
+    partyDiv.appendChild(document.createElement("br"));
+  }
+  showPage("votingPage");
+}
+
+function verifyAadhaar() {
+  clearError();
+  let aadhaar = document.getElementById("aadhaar").value.trim();
+  if (!/^\d{12}$/.test(aadhaar)) {
+    document.getElementById("error").textContent = "Enter a valid 12-digit Aadhaar number.";
+    return;
+  }
+  if (voters.has(aadhaar)) {
+    document.getElementById("error").textContent = "This Aadhaar has already voted!";
+    return;
+  }
+  if (users[aadhaar]) {
+    const user = users[aadhaar];
+    if (user.age < 18) {
+      document.getElementById("error").textContent = "You must be 18 or older to vote.";
+      return;
+    }
+
+    currentVoter = aadhaar;
+    document.getElementById("userName").textContent = `Name: ${user.name}`;
+    document.getElementById("userPhoto").src = user.photo;
+    document.getElementById("userAadhaar").textContent = aadhaar;
+    document.getElementById("userVoterId").textContent = user.voterId;
+    document.getElementById("userAge").textContent = user.age;
+    document.getElementById("userAddress").textContent = user.address;
+    document.getElementById("userDetails").classList.remove("hidden");
+  } else {
+    document.getElementById("error").textContent = "Invalid Aadhaar Number!";
+  }
+}
+
+function clearAllInputs() {
+  document.getElementById("aadhaar").value = "";
+  clearError();
+  clearUserDetails();
+  clearVoting();
+}
+
+function clearError() {
+  document.getElementById("error").textContent = "";
+}
+function clearUserDetails() {
+  document.getElementById("userDetails").classList.add("hidden");
+  document.getElementById("userName").textContent = "";
+  document.getElementById("userPhoto").src = "";
+  document.getElementById("userAadhaar").textContent = "";
+  document.getElementById("userVoterId").textContent = "";
+  document.getElementById("userAge").textContent = "";
+  document.getElementById("userAddress").textContent = "";
+}
+
+function clearVoting() {
+  document.getElementById("parties").innerHTML = "";
+  document.getElementById("submitVoteBtn").disabled = true;
+}
+
+let selectedParty = null;
+function selectParty(party, btn) {
+  selectedParty = party;
+  document.getElementById("submitVoteBtn").disabled = false;
+  const partyButtons = document.querySelectorAll("#parties button");
+  partyButtons.forEach(button => {
+    button.style.backgroundColor = "";
+    button.style.color = "";
+    button.style.fontWeight = "";
+  });
+  btn.style.backgroundColor = "#1976d2";
+  btn.style.color = "white";
+  btn.style.fontWeight = "700";
+}
+
+function submitVote() {
+  if (!selectedParty || !currentVoter) return;
+  voters.add(currentVoter);
+  votes[selectedParty] = (votes[selectedParty] || 0) + 1;
+  voteLogs.push({ aadhaar: currentVoter, time: new Date() });
+  selectedParty = null;
+  clearAllInputs();
+  showPage("nextSectionPage");
+}
+
+function goToAdminLogin() {
+  clearAdminInputs();
+  showPage("adminLoginPage");
+}
+function goToAdminDashboard() {
+  updateDashboard();
+  showPage("adminDashboardPage");
+}
+
+function adminLogin() {
+  const username = document.getElementById("adminUsername").value.trim();
+  const password = document.getElementById("adminPassword").value.trim();
+  clearAdminError();
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    clearAdminInputs();
+    goToAdminDashboard();
+  } else {
+    document.getElementById("adminLoginError").textContent = "Invalid username or password.";
+  }
+}
+function clearAdminInputs() {
+  document.getElementById("adminUsername").value = "";
+  document.getElementById("adminPassword").value = "";
+  clearAdminError();
+}
+function clearAdminError() {
+  document.getElementById("adminLoginError").textContent = "";
+}
+
+function updateDashboard() {
+  document.getElementById("totalVotes").textContent = voteLogs.length;
+  const ctx = document.getElementById('resultsChart').getContext('2d');
+  if (voteLogs.length === 0) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.font = "18px Poppins, Arial";
+    ctx.fillStyle = "#666";
+    ctx.textAlign = "center";
+    ctx.fillText("No votes cast yet.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+    return;
+  }
+
+  const parties = Object.keys(votes);
+  const counts = Object.values(votes);
+  if (window.myChart) window.myChart.destroy();
+
+  window.myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: parties,
+      datasets: [{
+        label: 'Votes',
+        data: counts,
+        backgroundColor: ['#ef5350', '#42a5f5', '#66bb6a'],
+        borderWidth: 1,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { enabled: true }
+      }
+    }
+  });
+}
+
+function logoutAdmin() {
+  goToHome();
+}
+
+goToHome();
+</script>
+</body>
+</html>
